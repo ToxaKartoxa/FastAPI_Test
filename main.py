@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from database import create_tables, delete_tables
-
 from router import router as tasks_router
 
+####################################################################################
 
 @asynccontextmanager        # декоратор, позволяет создавать контекстные менеджеры
 async def lifespan(app: FastAPI):
@@ -18,8 +18,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(tasks_router)
 
-
-
-
-
+####################################################################################
 
