@@ -15,11 +15,10 @@ router = APIRouter(
     tags=["Таски"]
 )
 
-@router.get("/home")
-async def get_home(
-    current_user: Annotated[User, Depends(get_current_active_user)]
-):
-    return {'Чё каво??'}
+user = APIRouter(
+#    prefix="/tasks",
+    tags=["Юзеры"]
+)
 
 
 @router.post("/tasks")
@@ -36,10 +35,17 @@ async def get_tasks(current_user: Annotated[User, Depends(get_current_active_use
     return tasks
 
 
+@router.get("/home")
+async def get_home(
+    current_user: Annotated[User, Depends(get_current_active_user)]
+):
+    return {'Чё каво??'}
+
+
 ####################################################################################
 
 
-@router.post("/token")
+@user.post("/token")
 async def login_for_access_token(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> Token:
@@ -57,14 +63,14 @@ async def login_for_access_token(
     return Token(access_token=access_token, token_type="bearer")
 
 
-@router.get("/users/me/", response_model=User)
+@user.get("/users/me/", response_model=User)
 async def read_users_me(
     current_user: Annotated[User, Depends(get_current_active_user)]
 ):
     return current_user
 
 
-@router.get("/users/me/items/")
+@user.get("/users/me/items/")
 async def read_own_items(
     current_user: Annotated[User, Depends(get_current_active_user)]
 ):
