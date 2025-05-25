@@ -1,4 +1,4 @@
-from typing import Annotated
+from typing import Annotated, Any, Coroutine
 
 from OAuth2 import authenticate_user, fake_users_db, get_current_active_user, ACCESS_TOKEN_EXPIRE_MINUTES, \
     create_access_token
@@ -9,6 +9,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from fastapi import Depends, HTTPException, status, APIRouter
 from datetime import timedelta
+
+from fastapi import FastAPI, status
+from typing import List, Optional
+import uvicorn
+from asyncio import tasks
 
 router = APIRouter(
 #    prefix="/tasks",
@@ -34,6 +39,15 @@ async def get_tasks(current_user: Annotated[User, Depends(get_current_active_use
     tasks = await TaskRepository.find_one() # find_all
     return tasks
 
+@router.get("/tasks/{task_id}")
+async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int) -> STask:
+    tasks = await TaskRepository.find_one()
+    if (len(tasks) >= task_id and len(tasks) != 0 and task_id > 0):
+        task = tasks[task_id-1]
+        return task
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
+    return task
 
 @router.get("/home")
 async def get_home(
