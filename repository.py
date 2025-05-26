@@ -11,16 +11,18 @@ class TaskRepository:
             task_dict = data.model_dump()
             task = TaskOrm(**task_dict)
             session.add(task)
-            await session.flush()
-            await session.commit()      # await ожидание конца синхронной операции
+            await session.flush()       # синхронизируем изменения, внесенные в сессию
+            await session.commit()      # завершаем транзакцию и делаем изменения постоянными в базе данных
+            # await ожидание конца синхронной операции
             return task.id
 
 
     @classmethod
-    async def dell_one(cls, task_id: int) -> bool:
+    async def dell_one(cls, task_id: int):
         async with new_session() as session:
-            session.delete(task_id)
 
+    #        await session.flush()       # синхронизируем изменения, внесенные в сессию
+            await session.commit()      # завершаем транзакцию и делаем изменения постоянными в базе данных
             return
 
 
@@ -40,10 +42,8 @@ class TaskRepository:
             query = select(TaskOrm)
             result = await session.execute(query)
             task_models = result.scalars().all()
-            task_schemas = [ STask.model_validate(task_model) for task_model in task_models ]
-
-            if (len(task_schemas) >= task_id and len(task_schemas) != 0 and task_id > 0):
-                task = task_schemas[task_id-1]
+            if (len(task_models) >= task_id and len(task_models) != 0 and task_id > 0):
+                task = STask.model_validate(task_models[task_id-1])
                 return task, True
             else:
                 task = STask(name="", description="", id=0)

@@ -49,6 +49,13 @@ async def get_task(current_user: Annotated[User, Depends(get_current_active_user
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
 
 
+#Удаляем конкретную таску по id
+@router.delete("/tasks/{task_id}")
+async def delete_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int):
+    await TaskRepository.dell_one(task_id)
+    return {'Таска уничтожена'}
+
+
 # Тест домой
 @router.get("/home")
 async def get_home(
