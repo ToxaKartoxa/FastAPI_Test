@@ -39,20 +39,20 @@ async def get_tasks(current_user: Annotated[User, Depends(get_current_active_use
     return tasks
 
 
-# Смотрим конкретную таску по id
-@router.get("/tasks/{task_id}")
-async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int):
-    task, err = await TaskRepository.find_one(task_id)
+# Смотрим конкретную таску по №
+@router.get("/tasks/{task_№}")
+async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_nom: int):
+    task, err = await TaskRepository.find_one(task_nom)
     if err == True:
         return task
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
 
 
-#Удаляем конкретную таску по id
-@router.delete("/tasks/{task_id}")
-async def delete_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int):
-    err = await TaskRepository.dell_one(task_id)
+#Удаляем конкретную таску по №
+@router.delete("/tasks/{task_№}")
+async def delete_task(current_user: Annotated[User, Depends(get_current_active_user)], task_nom: int):
+    err = await TaskRepository.dell_one(task_nom)
     if err == True:
         return {"Таска уничтожена"}
     else:
