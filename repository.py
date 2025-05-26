@@ -18,12 +18,17 @@ class TaskRepository:
 
 
     @classmethod
-    async def dell_one(cls, task_id: int):
+    async def dell_one(cls, task_id: int) -> bool:
         async with new_session() as session:
-
-    #        await session.flush()       # синхронизируем изменения, внесенные в сессию
-            await session.commit()      # завершаем транзакцию и делаем изменения постоянными в базе данных
-            return
+            query = select(TaskOrm)
+            result = await session.execute(query)
+            task_models = result.scalars().all()
+            if (len(task_models) >= task_id and len(task_models) != 0 and task_id > 0):
+                await session.delete(task_models[task_id-1])
+                await session.commit()
+                return True
+            else:
+                return False
 
 
     @classmethod
