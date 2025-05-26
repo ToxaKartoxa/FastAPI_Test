@@ -5,6 +5,7 @@ from schemas import STaskAdd, STask
 
 class TaskRepository:
 
+    # Добавляем таску
     @classmethod
     async def add_one(cls, data: STaskAdd) -> int:
         async with new_session() as session:
@@ -17,20 +18,77 @@ class TaskRepository:
             return task.id
 
 
+    # Удаляем конкретную таску по №
     @classmethod
-    async def dell_one(cls, task_id: int) -> bool:
+    async def dell_one(cls, task_nom: int) -> bool:
         async with new_session() as session:
             query = select(TaskOrm)
             result = await session.execute(query)
             task_models = result.scalars().all()
-            if (len(task_models) >= task_id and len(task_models) != 0 and task_id > 0):
-                await session.delete(task_models[task_id-1])
+            if (len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0):
+                await session.delete(task_models[task_nom-1])
                 await session.commit()
                 return True
             else:
                 return False
 
 
+    # Удаляем конкретную таску по id
+    @classmethod
+    async def dell_one_id(cls, task_id: int) -> bool:
+        async with new_session() as session:
+            # Получаем таску
+            user = await session.get(TaskOrm, task_id)
+            if not user:
+                return False
+            else:
+                await session.delete(user)
+                await session.commit()
+                return True
+
+
+    # Заменяет существующую таску по №
+    @classmethod
+    async def update_one(cls, data: STaskAdd, task_nom: int) -> (STask, bool):
+        async with new_session() as session:
+            query = select(TaskOrm)
+            result = await session.execute(query)
+            task_models = result.scalars().all()
+            if (len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0):
+                # task_dict = data.model_dump()
+                # await session.refresh(task_models[task_nom-1], task_dict)
+                task = STask.model_validate(task_models[task_nom - 1])
+                task_, err = await TaskRepository.update_one_id(data, task.id)
+                return task_, err
+            else:
+                task = STask(name="", description="", id=0)
+                return task, False
+
+
+    # Заменяет существующую таску по id
+    @classmethod
+    async def update_one_id(cls, data: STaskAdd, task_id: int) -> (STask, bool):
+        async with new_session() as session:
+            # Получаем таску
+            user = await session.get(TaskOrm, task_id)
+            if not user:
+                task = STask(name="", description="", id=0)
+                return task, False
+            else:
+                # Обновляем данные в базе данных
+                user.name = data.name
+                user.description = data.description
+                user.id = task_id
+                await session.commit()
+                # Обновляем объект в сессии
+                await session.refresh(user)
+                # Проверяем, что данные обновлены
+                user = await session.get(TaskOrm, task_id)
+                task = STask.model_validate(user)
+                return task, True
+
+
+    # Смотрим все таски
     @classmethod
     async def find_all(cls) -> list[STask]:
         async with new_session() as session:
@@ -41,15 +99,29 @@ class TaskRepository:
             return task_schemas
 
 
+    # Смотрим конкретную таску по №
     @classmethod
-    async def find_one(cls, task_id: int) -> (STask, bool):
+    async def find_one(cls, task_nom: int) -> (STask, bool):
         async with new_session() as session:
             query = select(TaskOrm)
             result = await session.execute(query)
             task_models = result.scalars().all()
-            if (len(task_models) >= task_id and len(task_models) != 0 and task_id > 0):
-                task = STask.model_validate(task_models[task_id-1])
+            if (len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0):
+                task = STask.model_validate(task_models[task_nom-1])
                 return task, True
             else:
                 task = STask(name="", description="", id=0)
                 return task, False
+
+
+    # Смотрим конкретную таску по id
+    @classmethod
+    async def find_one_id(cls, task_id: int) -> (STask, bool):
+        async with new_session() as session:
+            user = await session.get(TaskOrm, task_id)
+            if not user:
+                task = STask(name="", description="", id=0)
+                return task, False
+            else:
+                task = STask.model_validate(user)
+                return task, True
