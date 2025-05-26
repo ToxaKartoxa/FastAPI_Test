@@ -41,7 +41,7 @@ async def get_tasks(current_user: Annotated[User, Depends(get_current_active_use
 
 # Смотрим конкретную таску по id
 @router.get("/tasks/{task_id}")
-async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int) -> STask:
+async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int):
     task, err = await TaskRepository.find_one(task_id)
     if err == True:
         return task
