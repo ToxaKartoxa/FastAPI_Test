@@ -10,10 +10,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status, APIRouter
 from datetime import timedelta
 
-from fastapi import FastAPI, status
-from typing import List, Optional
-import uvicorn
-from asyncio import tasks
+
 
 router = APIRouter(
 #    prefix="/tasks",
@@ -26,6 +23,7 @@ user = APIRouter(
 )
 
 
+# Добавляем таску
 @router.post("/tasks")
 async def add_task(
         current_user: Annotated[User, Depends(get_current_active_user)], task: Annotated[STaskAdd, Depends()]
@@ -34,21 +32,24 @@ async def add_task(
     return {'ok': True, 'task_id': task_id}
 
 
+# Смотрим все таски
 @router.get("/tasks")
 async def get_tasks(current_user: Annotated[User, Depends(get_current_active_user)]) -> list[STask]:
-    tasks = await TaskRepository.find_one() # find_all
+    tasks = await TaskRepository.find_all()
     return tasks
 
+
+# Смотрим конкретную таску по id
 @router.get("/tasks/{task_id}")
 async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int) -> STask:
-    tasks = await TaskRepository.find_one()
-    if (len(tasks) >= task_id and len(tasks) != 0 and task_id > 0):
-        task = tasks[task_id-1]
+    task, err = await TaskRepository.find_one(task_id)
+    if err == True:
         return task
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
-    return task
 
+
+# Тест домой
 @router.get("/home")
 async def get_home(
     current_user: Annotated[User, Depends(get_current_active_user)]
