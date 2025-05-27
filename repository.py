@@ -67,13 +67,13 @@ class TaskRepository:
 
     # Заменяет существующую таску по id
     @classmethod
-    async def update_one_id(cls, data: STaskAdd, task_id: int) -> (STask, bool):
+    async def update_one_id(cls, data: STaskAdd, task_id: int) -> (STask, int):
         async with new_session() as session:
             # Получаем таску
             user = await session.get(TaskOrm, task_id)
             if not user:
                 task = STask(name="", description="", id=0)
-                return task, False
+                return task, 1 # - таска не найдена
             else:
                 # Обновляем таску
                 user.name = data.name
@@ -85,7 +85,11 @@ class TaskRepository:
                 # Проверяем, что таска обновлена
                 user = await session.get(TaskOrm, task_id)
                 task = STask.model_validate(user)
-                return task, True
+                task_set = STask(name=data.name, description=data.description, id=task_id)
+                if task_set == task:
+                    return task, 0 # - ok
+                else:
+                    return task, 2 # - Перезапись не удалась
 
 
     # Смотрим все таски

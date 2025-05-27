@@ -94,10 +94,12 @@ async def update_task(current_user: Annotated[User, Depends(get_current_active_u
 @router.put("/tasks/{task_id}")
 async def update_task(current_user: Annotated[User, Depends(get_current_active_user)], task: Annotated[STaskAdd, Depends()], task_id: int):
     task_, err = await TaskRepository.update_one_id(task, task_id)
-    if err == True:
+    if err == 0:
         return {"Таска успешно заменена по id"}, task_
-    else:
+    elif err == 1:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
+    else: # err == 2
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Перезапись не удалась") # вызываем ошибку
 
 
 # Очистить таблицу
