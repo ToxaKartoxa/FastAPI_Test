@@ -75,14 +75,14 @@ class TaskRepository:
                 task = STask(name="", description="", id=0)
                 return task, False
             else:
-                # Обновляем данные в базе данных
+                # Обновляем таску
                 user.name = data.name
                 user.description = data.description
                 user.id = task_id
                 await session.commit()
                 # Обновляем объект в сессии
                 await session.refresh(user)
-                # Проверяем, что данные обновлены
+                # Проверяем, что таска обновлена
                 user = await session.get(TaskOrm, task_id)
                 task = STask.model_validate(user)
                 return task, True
