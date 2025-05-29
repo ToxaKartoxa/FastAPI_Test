@@ -49,7 +49,7 @@ class TaskRepository:
 
     # Заменяет существующую таску по №
     @classmethod
-    async def update_one(cls, data: STaskAdd, task_nom: int) -> (STask, bool):
+    async def update_one(cls, data: STaskAdd, task_nom: int) -> (STask, int):
         async with new_session() as session:
             query = select(TaskOrm)
             result = await session.execute(query)
@@ -62,7 +62,7 @@ class TaskRepository:
                 return task_, err
             else:
                 task = STask(name="", description="", id=0)
-                return task, False
+                return task, 1 # - таска не найдена
 
 
     # Заменяет существующую таску по id
