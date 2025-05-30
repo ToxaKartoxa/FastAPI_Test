@@ -41,6 +41,18 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
+@router.get('/delphibasics/{item_id}', include_in_schema=False)
+async def php_html(item_id: str):
+    path_ = "delphibasics/" + item_id
+    return FileResponse(path=path_, media_type="html")
+# media_type="multipart/form-data" - скачать файл по ссылке
+
+@router.get('/delphibasics/{item_id1}/{item_id2}', include_in_schema=False)
+async def php_html(item_id1: str, item_id2: str):
+    path_ = "delphibasics/" + item_id1 + "/" + item_id2
+    return FileResponse(path=path_, media_type="html")
+
+
 # Добавляем таску
 @router.post("/tasks")
 async def add_task(
