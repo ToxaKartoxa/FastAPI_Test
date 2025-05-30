@@ -11,6 +11,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status, APIRouter
 from datetime import timedelta
 
+from fastapi.responses import FileResponse
+
 
 
 router = APIRouter(
@@ -22,6 +24,21 @@ user = APIRouter(
 #    prefix="/tasks",
     tags=["Юзеры"]
 )
+
+
+
+# Поддерживаемые методы
+# @router.options("/items/{item_id}")
+# async def get_items_options(current_user: Annotated[User, Depends(get_current_active_user)], item_id: int):
+#     # Возвращаем информацию о поддерживаемых методах и заголовках для /items/{item_id}
+#     return {"allowed_methods": ["GET", "POST", "PUT", "DELETE"]}
+
+
+favicon_path = "favicon.ico" # Adjust the path if needed
+
+@router.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(favicon_path)
 
 
 # Добавляем таску
@@ -156,4 +173,4 @@ async def read_users_me(
 async def read_own_items(
     current_user: Annotated[User, Depends(get_current_active_user)]
 ):
-    return [{"item_id": "нипонятно", "owner": current_user.username}]
+    return [{"item_id": "foo", "owner": current_user.username}]
