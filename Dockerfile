@@ -2,7 +2,7 @@ FROM python:3.12.3
 
 COPY . .
 
-RUN pip install uv
+RUN wget -qO- https://astral.sh/uv/install.sh | sh # pip install uv
 
 RUN uv pip install -r \recuirements.txt --system
 
