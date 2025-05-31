@@ -153,7 +153,7 @@ async def favicon():
     return FileResponse("favicon.ico")
 
 @router.get('/Lego.Film.Betmen.2017.avi') # include_in_schema=False - не отображать запрос на /docs
-async def Bullet_Train():
+async def Betmen():
     return FileResponse("Lego.Film.Betmen.2017.avi", media_type="multipart/form-data")
 
 # Модуль os.path предоставляет функции вроде exists(), isfile() и isdir(),
