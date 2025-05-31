@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status, APIRouter, Response
 from datetime import timedelta
 
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 import os
 
@@ -152,22 +152,26 @@ async def index():
 async def favicon():
     return FileResponse("favicon.ico")
 
+@router.get('/Lego.Film.Betmen.2017.avi') # include_in_schema=False - не отображать запрос на /docs
+async def Bullet_Train():
+    return FileResponse("Lego.Film.Betmen.2017.avi", media_type="multipart/form-data")
+
 # Модуль os.path предоставляет функции вроде exists(), isfile() и isdir(),
 # которые позволяют проверить, существует ли путь, является ли он файлом или директорией соответственно.
 
-def php_html(file_path: str):
+async def php_html(file_path: str):
     if os.path.exists(file_path):   # существует ли директория
         return FileResponse(path=file_path, media_type="html")
     else:
         raise HTTPException(status_code=404, detail="File not found")
 
 @router.get('/delphibasics/{file_path:path}')
-def delphibasics_html(file_path: str):
-    return php_html("delphibasics/" + file_path)
+async def delphibasics_html(file_path: str):
+    return await php_html("delphibasics/" + file_path)
 
 @router.get('/electronics/{file_path:path}')
-def electronics_html(file_path: str):
-    return php_html("electronics/" + file_path)
+async def electronics_html(file_path: str):
+    return await php_html("electronics/" + file_path)
 
 # @router.get('/delphibasics/{item_id}', include_in_schema=False)
 # async def php_html(item_id: str):
