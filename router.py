@@ -8,11 +8,12 @@ from schemas import STaskAdd, STask, STaskID, Token, User
 
 from fastapi.security import OAuth2PasswordRequestForm
 
-from fastapi import Depends, HTTPException, status, APIRouter
+from fastapi import Depends, HTTPException, status, APIRouter, Response
 from datetime import timedelta
 
 from fastapi.responses import FileResponse
 
+import os
 
 
 router = APIRouter(
@@ -32,25 +33,6 @@ user = APIRouter(
 # async def get_items_options(current_user: Annotated[User, Depends(get_current_active_user)], item_id: int):
 #     # Возвращаем информацию о поддерживаемых методах и заголовках для /items/{item_id}
 #     return {"allowed_methods": ["GET", "POST", "PUT", "DELETE"]}
-
-
-favicon_path = "favicon.ico" # Adjust the path if needed
-
-@router.get('/favicon.ico', include_in_schema=False)
-async def favicon():
-    return FileResponse(favicon_path)
-
-
-@router.get('/delphibasics/{item_id}', include_in_schema=False)
-async def php_html(item_id: str):
-    path_ = "delphibasics/" + item_id
-    return FileResponse(path=path_, media_type="html")
-# media_type="multipart/form-data" - скачать файл по ссылке
-
-@router.get('/delphibasics/{item_id1}/{item_id2}', include_in_schema=False)
-async def php_html(item_id1: str, item_id2: str):
-    path_ = "delphibasics/" + item_id1 + "/" + item_id2
-    return FileResponse(path=path_, media_type="html")
 
 
 # Добавляем таску
@@ -145,6 +127,9 @@ async def delete_all(
     return {'Все таски уничтожены'}
 
 
+###############################################################################################
+
+
 # Тест домой
 @router.get("/home")
 async def get_home(
@@ -153,7 +138,52 @@ async def get_home(
     return {'Чё каво??'}
 
 
-####################################################################################
+# Стартовая страница
+@router.get('/') # include_in_schema=False - не отображать запрос на /docs
+async def index():
+    return FileResponse("index.html")
+
+@router.get('/index.html') # include_in_schema=False - не отображать запрос на /docs
+async def index():
+    return FileResponse("index.html")
+
+
+@router.get('/favicon.ico') # include_in_schema=False - не отображать запрос на /docs
+async def favicon():
+    return FileResponse("favicon.ico")
+
+# Модуль os.path предоставляет функции вроде exists(), isfile() и isdir(),
+# которые позволяют проверить, существует ли путь, является ли он файлом или директорией соответственно.
+
+def php_html(file_path: str):
+    if os.path.exists(file_path):   # существует ли директория
+        return FileResponse(path=file_path, media_type="html")
+    else:
+        raise HTTPException(status_code=404, detail="File not found")
+
+@router.get('/delphibasics/{file_path:path}')
+def delphibasics_html(file_path: str):
+    return php_html("delphibasics/" + file_path)
+
+@router.get('/electronics/{file_path:path}')
+def electronics_html(file_path: str):
+    return php_html("electronics/" + file_path)
+
+# @router.get('/delphibasics/{item_id}', include_in_schema=False)
+# async def php_html(item_id: str):
+#     path_ = "delphibasics/" + item_id
+#     return FileResponse(path=path_, media_type="html")
+# # media_type="multipart/form-data" - скачать файл по ссылке
+# # media_type="application/octet-stream" - скачать файл по ссылке
+# # filename="mainpage.html" - можно обозвать файл иначе
+#
+# @router.get('/delphibasics/{item_id1}/{item_id2}', include_in_schema=False)
+# async def php_html(item_id1: str, item_id2: str):
+#     path_ = "delphibasics/" + item_id1 + "/" + item_id2
+#     return FileResponse(path=path_, media_type="html")
+
+
+###############################################################################################
 
 
 @user.post("/token")
