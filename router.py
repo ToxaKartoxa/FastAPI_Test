@@ -152,9 +152,9 @@ async def index():
 async def favicon():
     return FileResponse("favicon.ico")
 
-@router.get('/Lego.Film.Betmen.2017.avi') # include_in_schema=False - не отображать запрос на /docs
-async def Betmen():
-    return FileResponse("Lego.Film.Betmen.2017.avi", media_type="multipart/form-data")
+@router.get('/Santex_download') # include_in_schema=False - не отображать запрос на /docs
+async def Santex():
+    return FileResponse("Santex.mp4", media_type="video/mp4")
 
 # Модуль os.path предоставляет функции вроде exists(), isfile() и isdir(),
 # которые позволяют проверить, существует ли путь, является ли он файлом или директорией соответственно.
