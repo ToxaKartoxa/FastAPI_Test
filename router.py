@@ -139,7 +139,7 @@ async def get_home(
 
 
 # Стартовая страница
-@router.get('/') # include_in_schema=False - не отображать запрос на /docs
+@router.get('/', include_in_schema=False) # include_in_schema=False - не отображать запрос на /docs
 async def index():
     return FileResponse("index.html")
 
@@ -152,9 +152,17 @@ async def index():
 async def favicon():
     return FileResponse("favicon.ico")
 
-@router.get('/Santex_download') # include_in_schema=False - не отображать запрос на /docs
+
+@router.get('/Santex_download_1', include_in_schema=False) # include_in_schema=False - не отображать запрос на /docs
 async def Santex():
     return FileResponse("Santex.mp4", media_type="video/mp4")
+
+@router.get('/Santex_download_2', include_in_schema=False)
+def Santex():
+    def iterfile():
+        with open("Santex.mp4", mode="rb") as file_like:
+            yield from file_like
+    return StreamingResponse(iterfile(), media_type="video/mp4")
 
 # Модуль os.path предоставляет функции вроде exists(), isfile() и isdir(),
 # которые позволяют проверить, существует ли путь, является ли он файлом или директорией соответственно.
