@@ -168,7 +168,7 @@ def Santex():
 # которые позволяют проверить, существует ли путь, является ли он файлом или директорией соответственно.
 
 async def php_html(file_path: str):
-    if os.path.exists(file_path):   # существует ли директория
+    if os.path.exists(file_path) and os.path.isfile(file_path):   # существует ли директория and является ли он файлом
         return FileResponse(path=file_path, media_type="html")
     else:
         raise HTTPException(status_code=404, detail="File not found")
