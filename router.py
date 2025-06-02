@@ -11,7 +11,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi import Depends, HTTPException, status, APIRouter, Response
 from datetime import timedelta
 
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, StreamingResponse, HTMLResponse
 
 import os
 
@@ -139,23 +139,25 @@ async def get_home(
 
 
 # Стартовая страница
-@router.get('/', include_in_schema=False) # include_in_schema=False - не отображать запрос на /docs
+@router.get('/', response_class=HTMLResponse, include_in_schema=False) # include_in_schema=False - не отображать запрос на /docs
 async def index():
     return FileResponse("index.html")
 
-@router.get('/index.html') # include_in_schema=False - не отображать запрос на /docs
+@router.get('/index.html', response_class=HTMLResponse) # include_in_schema=False - не отображать запрос на /docs
 async def index():
     return FileResponse("index.html")
 
 
 @router.get('/favicon.ico') # include_in_schema=False - не отображать запрос на /docs
 async def favicon():
-    return FileResponse("favicon.ico")
+    return FileResponse("favicon.ico", media_type="image/x-icon") # "image/x-icon" или "image/vnd.microsoft.icon"?
 
 
 @router.get('/Santex_download_1', include_in_schema=False) # include_in_schema=False - не отображать запрос на /docs
 async def Santex():
-    return FileResponse("Santex.mp4", media_type="video/mp4")
+    return FileResponse("Santex.mp4",
+                        media_type="video/mp4",
+                        filename="Чем уплотнять сантехническую резьбу лён, лента фум, нить, анаэробный герметик.mp4")
 
 @router.get('/Santex_download_2', include_in_schema=False)
 def Santex():
@@ -173,11 +175,11 @@ async def php_html(file_path: str):
     else:
         raise HTTPException(status_code=404, detail="File not found")
 
-@router.get('/delphibasics/{file_path:path}')
+@router.get('/delphibasics/{file_path:path}', response_class=HTMLResponse)
 async def delphibasics_html(file_path: str):
     return await php_html("delphibasics/" + file_path)
 
-@router.get('/electronics/{file_path:path}')
+@router.get('/electronics/{file_path:path}', response_class=HTMLResponse)
 async def electronics_html(file_path: str):
     return await php_html("electronics/" + file_path)
 
