@@ -37,23 +37,21 @@ user = APIRouter(
 
 # Добавляем таску
 @router.post("/tasks")
-async def add_task(
-        current_user: Annotated[User, Depends(get_current_active_user)], task: Annotated[STaskAdd, Depends()]
-) -> STaskID:
+async def add_task(task: Annotated[STaskAdd, Depends()]) -> STaskID:
     task_id = await TaskRepository.add_one(task)
     return {'ok': True, 'task_id': task_id}
 
 
 # Смотрим все таски
 @router.get("/tasks")
-async def get_tasks(current_user: Annotated[User, Depends(get_current_active_user)]) -> list[STask]:
+async def get_tasks() -> list[STask]:
     tasks = await TaskRepository.find_all()
     return tasks
 
 
 # Смотрим конкретную таску по №
-@router.get("/tasks/{task_№}")
-async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_nom: int):
+@router.get("/tasks/N/{task_nom}")
+async def get_task(task_nom: int):
     task, err = await TaskRepository.find_one(task_nom)
     if err == True:
         return task
@@ -62,8 +60,8 @@ async def get_task(current_user: Annotated[User, Depends(get_current_active_user
 
 
 # Смотрим конкретную таску по id
-@router.get("/tasks/{task_id}")
-async def get_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int):
+@router.get("/tasks/id/{task_id}")
+async def get_task(task_id: int):
     task, err = await TaskRepository.find_one_id(task_id)
     if err == True:
         return task
@@ -72,8 +70,8 @@ async def get_task(current_user: Annotated[User, Depends(get_current_active_user
 
 
 #Удаляем конкретную таску по №
-@router.delete("/tasks/{task_№}")
-async def delete_task(current_user: Annotated[User, Depends(get_current_active_user)], task_nom: int):
+@router.delete("/tasks/N/{task_nom}")
+async def delete_task(task_nom: int):
     err = await TaskRepository.dell_one(task_nom)
     if err == True:
         return {"Таска уничтожена по порядковому номеру"}
@@ -82,8 +80,8 @@ async def delete_task(current_user: Annotated[User, Depends(get_current_active_u
 
 
 #Удаляем конкретную таску по id
-@router.delete("/tasks/{task_id}")
-async def delete_task(current_user: Annotated[User, Depends(get_current_active_user)], task_id: int):
+@router.delete("/tasks/id/{task_id}")
+async def delete_task(task_id: int):
     err = await TaskRepository.dell_one_id(task_id)
     if err == True:
         return {"Таска уничтожена по id"}
@@ -92,8 +90,8 @@ async def delete_task(current_user: Annotated[User, Depends(get_current_active_u
 
 
 # Заменяет существующую таску по №
-@router.put("/tasks/{task_№}")
-async def update_task(current_user: Annotated[User, Depends(get_current_active_user)], task: Annotated[STaskAdd, Depends()], task_nom: int):
+@router.put("/tasks/N/{task_nom}")
+async def update_task(task: Annotated[STaskAdd, Depends()], task_nom: int):
     task_, err = await TaskRepository.update_one(task, task_nom)
     if err == 0:
         return {"Таска успешно заменена по порядковому номеру"}, task_
@@ -104,8 +102,8 @@ async def update_task(current_user: Annotated[User, Depends(get_current_active_u
 
 
 # Заменяет существующую таску по id
-@router.put("/tasks/{task_id}")
-async def update_task(current_user: Annotated[User, Depends(get_current_active_user)], task: Annotated[STaskAdd, Depends()], task_id: int):
+@router.put("/tasks/id/{task_id}")
+async def update_task(task: Annotated[STaskAdd, Depends()], task_id: int):
     task_, err = await TaskRepository.update_one_id(task, task_id)
     if err == 0:
         return {"Таска успешно заменена по id"}, task_
@@ -117,9 +115,7 @@ async def update_task(current_user: Annotated[User, Depends(get_current_active_u
 
 # Очистить таблицу
 @router.delete("/tasks")
-async def delete_all(
-    current_user: Annotated[User, Depends(get_current_active_user)]
-):
+async def delete_all(current_user: Annotated[User, Depends(get_current_active_user)]):
     await delete_tables()   # сначала дропаются все старые таблицы
     print("База очищена")
     await create_tables()   # асинхронное взаимодействие с базой
