@@ -25,7 +25,7 @@ class TaskRepository:
             query = select(TaskOrm)
             result = await session.execute(query)
             task_models = result.scalars().all()
-            if (len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0):
+            if len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0:
                 await session.delete(task_models[task_nom-1])
                 await session.commit()
                 return True
@@ -54,7 +54,7 @@ class TaskRepository:
             query = select(TaskOrm)
             result = await session.execute(query)
             task_models = result.scalars().all()
-            if (len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0):
+            if len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0:
                 # task_dict = data.model_dump()
                 # await session.refresh(task_models[task_nom-1], task_dict)
                 task = STask.model_validate(task_models[task_nom - 1])
@@ -110,7 +110,7 @@ class TaskRepository:
             query = select(TaskOrm)
             result = await session.execute(query)
             task_models = result.scalars().all()
-            if (len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0):
+            if len(task_models) >= task_nom and len(task_models) != 0 and task_nom > 0:
                 task = STask.model_validate(task_models[task_nom-1])
                 return task, True
             else:
