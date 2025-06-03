@@ -39,6 +39,11 @@ def test_read_task():
         "description": "0000",
     }
 
+def test_create_read_task():
+    for i in range(0, 10):
+        test_create_task()
+        test_read_task()
+
 # def test_read_nonexistent_item():
 #     response = client.get("/items/10", headers={"X-Token": "coneofsilence"})
 #     assert response.status_code == 404
