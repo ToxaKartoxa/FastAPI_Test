@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<form id="myForm">
+  <input type="text" id="name" name="name" placeholder="Таска">
+  <input type="text" id="description" name="description" placeholder="Дескриптор">
+  <button type="button" id="submitButton">Отправить таску на запись</button>
+</form>
+
+<script>
+document.getElementById('submitButton').addEventListener('click', function() {
+    const form = document.getElementById('myForm');
+    const Data = {
+        "name": document.getElementById('name').value,
+        "description": document.getElementById('description').value
+    };
+
+    const json = JSON.stringify(Data);
+
+    fetch('http://127.0.0.1:8000/tasks', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: json
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.json();
+        }
+        throw new Error('Ошибка при отправке данных');
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+</script>
+
+</body>
+</html>
