@@ -29,15 +29,15 @@ user = APIRouter(
 
 
 # Поддерживаемые методы
-# @router.options("/items/{item_id}")
-# async def get_items_options(current_user: Annotated[User, Depends(get_current_active_user)], item_id: int):
-#     # Возвращаем информацию о поддерживаемых методах и заголовках для /items/{item_id}
-#     return {"allowed_methods": ["GET", "POST", "PUT", "DELETE"]}
+# @router.options("/{path:path}")
+# async def options_handler():
+#     return Response(status_code=200)
 
 
 # Добавляем таску
 @router.post("/tasks")
 async def add_task(task: Annotated[STaskAdd, Depends()]) -> STaskID:
+    print(task)
     task_id = await TaskRepository.add_one(task)
     return {'ok': True, 'task_id': task_id}
 
@@ -53,7 +53,7 @@ async def get_tasks() -> list[STask]:
 @router.get("/tasks/N/{task_nom}")
 async def get_task(task_nom: int):
     task, err = await TaskRepository.find_one(task_nom)
-    if err == True:
+    if err:
         return task
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
@@ -63,7 +63,7 @@ async def get_task(task_nom: int):
 @router.get("/tasks/id/{task_id}")
 async def get_task(task_id: int):
     task, err = await TaskRepository.find_one_id(task_id)
-    if err == True:
+    if err:
         return task
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
@@ -73,7 +73,7 @@ async def get_task(task_id: int):
 @router.delete("/tasks/N/{task_nom}")
 async def delete_task(task_nom: int):
     err = await TaskRepository.dell_one(task_nom)
-    if err == True:
+    if err:
         return {"Таска уничтожена по порядковому номеру"}
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
@@ -83,7 +83,7 @@ async def delete_task(task_nom: int):
 @router.delete("/tasks/id/{task_id}")
 async def delete_task(task_id: int):
     err = await TaskRepository.dell_one_id(task_id)
-    if err == True:
+    if err:
         return {"Таска уничтожена по id"}
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Таска не найдена") # вызываем ошибку
