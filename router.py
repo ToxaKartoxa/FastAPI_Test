@@ -36,7 +36,8 @@ user = APIRouter(
 
 # Добавляем таску
 @router.post("/tasks")
-async def add_task(task: Annotated[STaskAdd, Depends()]) -> STaskID:
+# async def add_task(task: Annotated[STaskAdd, Depends()]) -> STaskID: # аргументы в адресной строке
+async def add_task(task: STaskAdd) -> STaskID: # аргументы в jsone
     print(task)
     task_id = await TaskRepository.add_one(task)
     return {'ok': True, 'task_id': task_id}
