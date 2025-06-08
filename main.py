@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from database import create_tables, delete_tables
 from router import router as tasks_router, user as user_router
 
+from fastapi.middleware.cors import CORSMiddleware
+
 ####################################################################################
 
 @asynccontextmanager        # декоратор, позволяет создавать контекстные менеджеры
@@ -18,6 +20,16 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 app.include_router(tasks_router)
 app.include_router(user_router)
+
+# Настройка CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Или укажите конкретные домены, например: ["https://example.com"]
+    allow_credentials=True,
+#    allow_methods=["HEAD", "PATCH", "TRACE"],
+    allow_methods=["*"],  # Разрешить все методы, включая OPTIONS
+    allow_headers=["*"],  # Разрешить все заголовки
+)
 
 ####################################################################################
 
