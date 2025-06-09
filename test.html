@@ -18,7 +18,7 @@ document.getElementById('submitButton').addEventListener('click', function() {
 
     const json = JSON.stringify(Data);
 
-    fetch('http://127.0.0.1:8000/tasks', {
+    fetch('http://127.0.0.1:8000/tasks/json', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
