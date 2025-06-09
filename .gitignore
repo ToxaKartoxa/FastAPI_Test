@@ -1,5 +1,5 @@
 .venv
-tasks.db
+db_papka/tasks.db
 .test_fastapi
 .test_venv
 .idea
