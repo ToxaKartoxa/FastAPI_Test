@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 import bcrypt
 from dataclasses import dataclass
 
-from schemas import TokenData, UserInDB, User
+from . schemas import TokenData, UserInDB, User
 
 
 # to get a string like this run:
