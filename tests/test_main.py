@@ -5,11 +5,13 @@ from http.cookiejar import debug
 
 from fastapi.testclient import TestClient
 
-from src.database import create_tables, delete_tables
 from src.main import app
 
 import pytest
 
+from sqlalchemy import create_engine
+from sqlalchemy import MetaData
+from sqlalchemy import Table, Column, Integer, String, Date
 
 client = TestClient(app)
 
@@ -17,11 +19,11 @@ client = TestClient(app)
 
 
 # Тест на удаление всех тасок и чтение на проверку
-# def test_del_read_tasks():
-#     print('\nОчистка БД')
-#     del_tasks()
-#     print('Проверка БД на очистку')
-#     read_tasks()
+def test_del_read_tasks():
+    print('\nОчистка БД')
+    del_tasks()
+    print('Проверка БД на очистку')
+    read_tasks()
 
 
 # Тест на удаление всех тасок
@@ -45,23 +47,35 @@ def read_tasks():
 def create_del_bd():
     # print(str(uuid.uuid4())+'111')
     # breakpoint()
-    create_tables()  # асинхронное взаимодействие с базой
+    # metadata.create_all(engine)
     print("\nБаза готова к работе")
-    time.sleep(1)
+    # time.sleep(1)
     yield
-    delete_tables()  # сначала дропаются все старые таблицы
+    # delete_tables()
     print("\nБаза очищена")
     # print(str(uuid.uuid4())+'222')
+
+# # Пример для SQLite:
+# engine = create_engine('sqlite+aiosqlite:///db_papka/tasks.db')
+# metadata = MetaData()
+#
+# # Пример создания таблицы:
+# users = Table(
+#     'task', metadata,
+#     Column('id', Integer, primary_key=True),
+#     Column('name', String),
+#     Column('description', String),
+# )
 
 ############################################################
 
 
 # Тест на запись, правку, проверку и удаление тасок по id и порядковому номеру
-def test_create_read_put_del_tasks(create_del_bd):
-    print('\nОчистка БД')
-    del_tasks()
-    print('Проверка БД на очистку')
-    read_tasks()
+def test_create_read_put_del_tasks():
+    # print('\nОчистка БД')
+    # del_tasks()
+    # print('Проверка БД на очистку')
+    # read_tasks()
     create_read_put_del_tasks(10, 'id')
     create_read_put_del_tasks(10, 'N')
 
