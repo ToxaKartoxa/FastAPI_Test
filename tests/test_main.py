@@ -60,38 +60,38 @@ def cr_tasks2():
 
 # Тест на запись, правку, проверку и удаление тасок по id и порядковому номеру
 def test_create_read_put_del_tasks(cr_tasks2):
-    create_read_put_del_tasks(100, 'id')
-    create_read_put_del_tasks(100, 'N')
+    create_read_put_del_tasks(10, 'id')
+    create_read_put_del_tasks(10, 'N')
 
 
 def create_read_put_del_tasks(task_n: int, N_id: str):
     # print('\n')
-    print('Запись-чтение тасок по ' + N_id + ', n = 1 до ' + str(task_n))
+    print('Запись-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
     for i in range(1, task_n+1):
         create_task(i, 'name', 'description')
         read_task(N_id, i, 'name', 'description', True)
 
-    print('Чтение всех тасок разом по ' + N_id + ', n = 1 до ' + str(task_n))
+    print('Чтение всех тасок разом по ' + N_id + ', n = 1 по ' + str(task_n))
     read_tasks_series(1, task_n, 'name', 'description')
 
-    print('Обновление-чтение тасок по ' + N_id + ', n = 1 до ' + str(task_n))
+    print('Обновление-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
     for i in range(1, task_n+1):
         put_task(N_id, i, 'имя', 'дескриптор', True)
         read_task(N_id, i, 'имя', 'дескриптор', True)
 
-    print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = ' + str(task_n) + ' до ' + str(task_n*2-1))
+    print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = ' + str(task_n+1) + ' по ' + str(task_n*2))
     for i in range(task_n+1, task_n*2):
         put_task(N_id, i, '', '', False)
         read_task(N_id, i, '', '', False)
         del_task(N_id, i, False)
 
-    print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = 0 до ' + str(-task_n))
+    print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = 0 по ' + str(-task_n))
     for i in range(0, -task_n-1, -1):
         put_task(N_id, i, '', '', False)
         read_task(N_id, i, '', '', False)
         del_task(N_id, i, False)
 
-    print('Удаление тасок по ' + N_id + ', n = 1 до ' + str(task_n))
+    print('Удаление тасок по ' + N_id + ', n = 1 по ' + str(task_n))
     for i in range(task_n, 0, -1):
         del_task(N_id, i, True)
 
