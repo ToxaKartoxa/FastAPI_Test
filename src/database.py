@@ -1,5 +1,6 @@
 # подключаем асинхронно бд
 # библиотека sqlalchemy суперпоаулярная билиотека для работы с реализационными бд на пу
+import os
 
 # импорт асинхронного движка для работы с бд
 
@@ -31,6 +32,9 @@ class TaskOrm(Model):               # описание таблицы
     description: Mapped[str | None]
 
 async def create_tables():    # асинхронная функция для создание таблиц (потомучто ипозльзуем асинх. драйвер aiosqlite)
+    file_path = './db_papka'
+    if not os.path.exists(file_path) and not os.path.isfile(file_path): # существует ли директория and является ли он файлом
+        os.mkdir(file_path)
     async with engine.begin() as conn:      # которая обращается к engine, который отправляет запросы
         await conn.run_sync(Model.metadata.create_all)      # и создавать все таблицы
 
