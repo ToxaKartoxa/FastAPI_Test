@@ -1,14 +1,15 @@
+import os
+import time
 import uuid
 from http.cookiejar import debug
 
 from fastapi.testclient import TestClient
 
+from src.database import create_tables, delete_tables
 from src.main import app
 
 import pytest
 
-from src.repository import TaskRepository
-from src.schemas import STaskAdd, STaskID
 
 client = TestClient(app)
 
@@ -16,11 +17,11 @@ client = TestClient(app)
 
 
 # Тест на удаление всех тасок и чтение на проверку
-def test_del_read_tasks():
-    print('\nОчистка БД')
-    del_tasks()
-    print('Проверка БД на очистку')
-    read_tasks()
+# def test_del_read_tasks():
+#     print('\nОчистка БД')
+#     del_tasks()
+#     print('Проверка БД на очистку')
+#     read_tasks()
 
 
 # Тест на удаление всех тасок
@@ -39,27 +40,28 @@ def read_tasks():
 
 ############################################################
 
+# Создание и уничтожение бд
 @pytest.fixture(scope="function")
-async def cr_tasks():
-    task = STaskAdd(name="task", description="<UNK> <UNK> <UNK>")
-    task_id = await TaskRepository.add_one(task)
-    return STaskID(ok=True, task_id=task_id)
-
-
-@pytest.fixture(scope="function")
-def cr_tasks2():
+def create_del_bd():
     # print(str(uuid.uuid4())+'111')
     # breakpoint()
-    print("\nРаз")
+    create_tables()  # асинхронное взаимодействие с базой
+    print("\nБаза готова к работе")
+    time.sleep(1)
     yield
-    print("\nДва")
+    delete_tables()  # сначала дропаются все старые таблицы
+    print("\nБаза очищена")
     # print(str(uuid.uuid4())+'222')
 
 ############################################################
 
 
 # Тест на запись, правку, проверку и удаление тасок по id и порядковому номеру
-def test_create_read_put_del_tasks(cr_tasks2):
+def test_create_read_put_del_tasks(create_del_bd):
+    print('\nОчистка БД')
+    del_tasks()
+    print('Проверка БД на очистку')
+    read_tasks()
     create_read_put_del_tasks(10, 'id')
     create_read_put_del_tasks(10, 'N')
 
