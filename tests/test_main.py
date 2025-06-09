@@ -70,8 +70,10 @@ def create_read_put_del_tasks(task_n: int, N_id: str):
     for i in range(1, task_n+1):
         create_task(i, 'name', 'description')
         read_task(N_id, i, 'name', 'description', True)
+
     print('Чтение всех тасок разом по ' + N_id + ', n = 1 до ' + str(task_n))
     read_tasks_series(1, task_n, 'name', 'description')
+
     print('Обновление-чтение тасок по ' + N_id + ', n = 1 до ' + str(task_n))
     for i in range(1, task_n+1):
         put_task(N_id, i, 'имя', 'дескриптор', True)
@@ -92,6 +94,7 @@ def create_read_put_del_tasks(task_n: int, N_id: str):
     print('Удаление тасок по ' + N_id + ', n = 1 до ' + str(task_n))
     for i in range(task_n, 0, -1):
         del_task(N_id, i, True)
+
     print('Проверка БД на очистку')
     read_tasks()
 
