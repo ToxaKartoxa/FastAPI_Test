@@ -1,13 +1,12 @@
-import os
-import time
-import uuid
 from http.cookiejar import debug
-
 from fastapi.testclient import TestClient
-
 from src.main import app
-
 import pytest
+
+import os
+import uuid
+
+from src.database import Model, engine, delete_tables, create_tables
 
 from sqlalchemy import create_engine
 from sqlalchemy import MetaData
@@ -19,10 +18,11 @@ client = TestClient(app)
 
 
 # Тест на удаление всех тасок и чтение на проверку
+# Создание БД
 def test_del_read_tasks():
     print('\nОчистка БД')
     del_tasks()
-    print('Проверка БД на очистку')
+    print('Проверка чистой БД')
     read_tasks()
 
 
@@ -48,71 +48,63 @@ def create_del_bd():
     # print(str(uuid.uuid4())+'111')
     # breakpoint()
     # metadata.create_all(engine)
+    # Model.metadata.create_all(engine)
+    create_tables()
     print("\nБаза готова к работе")
-    # time.sleep(1)
     yield
-    # delete_tables()
+    delete_tables()
+    # Model.metadata.drop_all(engine)
     print("\nБаза очищена")
     # print(str(uuid.uuid4())+'222')
-
-# # Пример для SQLite:
-# engine = create_engine('sqlite+aiosqlite:///db_papka/tasks.db')
-# metadata = MetaData()
-#
-# # Пример создания таблицы:
-# users = Table(
-#     'task', metadata,
-#     Column('id', Integer, primary_key=True),
-#     Column('name', String),
-#     Column('description', String),
-# )
 
 ############################################################
 
 
 # Тест на запись, правку, проверку и удаление тасок по id и порядковому номеру
 def test_create_read_put_del_tasks():
-    # print('\nОчистка БД')
-    # del_tasks()
-    # print('Проверка БД на очистку')
+    # print('Проверка чистой БД')
     # read_tasks()
     create_read_put_del_tasks(10, 'id')
     create_read_put_del_tasks(10, 'N')
 
 
-def create_read_put_del_tasks(task_n: int, N_id: str):
+def create_read_put_del_tasks(task_n: int, N_id='id'):
     # print('\n')
-    print('Запись-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
-    for i in range(1, task_n+1):
-        create_task(i, 'name', 'description')
-        read_task(N_id, i, 'name', 'description')
+    if N_id not in ('id', 'N'):
+        print('Аргумент N_id = ' + N_id + ' задан неверно. N_id = id либо N.')
+        return
+    else:
+        print('Запись-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
+        for i in range(1, task_n+1):
+            create_task(i, 'name', 'description')
+            read_task(N_id, i, 'name', 'description')
 
-    print('Чтение всех тасок разом по ' + N_id + ', n = 1 по ' + str(task_n))
-    read_tasks_series(1, task_n, 'name', 'description')
+        print('Чтение всех тасок разом по ' + N_id + ', n = 1 по ' + str(task_n))
+        read_tasks_series(1, task_n, 'name', 'description')
 
-    print('Обновление-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
-    for i in range(1, task_n+1):
-        put_task(N_id, i, 'имя', 'дескриптор')
-        read_task(N_id, i, 'имя', 'дескриптор')
+        print('Обновление-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
+        for i in range(1, task_n+1):
+            put_task(N_id, i, 'имя', 'дескриптор')
+            read_task(N_id, i, 'имя', 'дескриптор')
 
-    print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = ' + str(task_n+1) + ' по ' + str(task_n*2))
-    for i in range(task_n+1, task_n*2):
-        put_task(N_id, i, err=False)
-        read_task(N_id, i, err=False)
-        del_task(N_id, i, False)
+        print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = ' + str(task_n+1) + ' по ' + str(task_n*2))
+        for i in range(task_n+1, task_n*2):
+            put_task(N_id, i, err=False)
+            read_task(N_id, i, err=False)
+            del_task(N_id, i, False)
 
-    print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = 0 по ' + str(-task_n))
-    for i in range(0, -task_n-1, -1):
-        put_task(N_id, i, err=False)
-        read_task(N_id, i, err=False)
-        del_task(N_id, i, False)
+        print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = 0 по ' + str(-task_n))
+        for i in range(0, -task_n-1, -1):
+            put_task(N_id, i, err=False)
+            read_task(N_id, i, err=False)
+            del_task(N_id, i, False)
 
-    print('Удаление тасок по ' + N_id + ', n = 1 по ' + str(task_n))
-    for i in range(task_n, 0, -1):
-        del_task(N_id, i)
+        print('Удаление тасок по ' + N_id + ', n = 1 по ' + str(task_n))
+        for i in range(task_n, 0, -1):
+            del_task(N_id, i)
 
-    print('Проверка БД на очистку')
-    read_tasks()
+        print('Проверка БД на очистку')
+        read_tasks()
 
 
 # Тест на запись таски
