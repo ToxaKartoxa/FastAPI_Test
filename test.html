@@ -3,18 +3,26 @@
 <body>
 
 <form id="myForm">
-<div style="text-align: center;">
 
+<div style="text-align: center;">
+	<h2></h2>
 	<label for="IP">Выберите IP для отправки:</label>
 	<select id="IP" name="IP" multiple>
-		<option value="http://127.0.0.1:8000/tasks/json">127.0.0.1</option>
-		<option value="http://188.120.249.2:8000/tasks/json">188.120.249.2</option>
+		<option value="127.0.0.1:8000">127.0.0.1</option>
+		<option value="188.120.249.2">188.120.249.2</option>
 	</select>
-
 	<input type="text" id="name" name="name" placeholder="Таска" value="Таска">
 	<input type="text" id="description" name="description" placeholder="Дескриптор" value="Дескриптор">
 	<button type="button" id="submitButton">Отправить таску на запись</button>
 </div>
+
+<div style="text-align: center;">
+	<h2></h2>
+	<input type="text" style="width: 50px;" id="ID" name="ID" placeholder="ID" value="1">
+	<button type="button" id="json_read">Прочитать таску</button>
+	<div id="data"></div> <!-- Здесь будет отображаться JSON -->
+</div>
+
 </form>
 
 <script>
@@ -27,7 +35,7 @@ document.getElementById('submitButton').addEventListener('click', function() {
 
     const json = JSON.stringify(Data);
 
-    fetch(document.getElementById('IP').value, {
+    fetch('http://' + document.getElementById('IP').value + '/tasks/json', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -46,6 +54,32 @@ document.getElementById('submitButton').addEventListener('click', function() {
     .catch(error => {
         console.error('Error:', error);
     });
+});
+</script>
+
+<script>
+// AJAX запрос
+document.getElementById('json_read').addEventListener('click', function() {
+fetch('http://' + document.getElementById('IP').value + '/tasks/id/' + document.getElementById('ID').value)
+	.then(response => {
+		if (!response.ok) {
+			throw new Error('Ошибка при загрузке данных: ' + response.status);
+		}
+		return response.json(); // Преобразуем ответ в JSON
+	})
+	.then(data => {
+		// Отображение JSON данных
+		const dataDiv = document.getElementById('data');
+		dataDiv.innerHTML = JSON.stringify(data, null, 2); // Форматированный JSON
+		// Или можно обработать данные и отобразить их в более удобном формате:
+		// dataDiv.innerHTML = `<ul>${data.map(item => `<li>${item.name}</li>`).join('')}</ul>`; // Пример
+	})
+	.catch(error => {
+		console.error('Ошибка:', error);
+		// Отобразить сообщение об ошибке на странице
+		const dataDiv = document.getElementById('data');
+		dataDiv.innerHTML = `<p>Ошибка при загрузке данных: ${error.message}</p>`;
+	});
 });
 </script>
 
