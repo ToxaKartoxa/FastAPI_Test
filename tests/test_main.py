@@ -85,31 +85,31 @@ def create_read_put_del_tasks(task_n: int, N_id: str):
     print('Запись-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
     for i in range(1, task_n+1):
         create_task(i, 'name', 'description')
-        read_task(N_id, i, 'name', 'description', True)
+        read_task(N_id, i, 'name', 'description')
 
     print('Чтение всех тасок разом по ' + N_id + ', n = 1 по ' + str(task_n))
     read_tasks_series(1, task_n, 'name', 'description')
 
     print('Обновление-чтение тасок по ' + N_id + ', n = 1 по ' + str(task_n))
     for i in range(1, task_n+1):
-        put_task(N_id, i, 'имя', 'дескриптор', True)
-        read_task(N_id, i, 'имя', 'дескриптор', True)
+        put_task(N_id, i, 'имя', 'дескриптор')
+        read_task(N_id, i, 'имя', 'дескриптор')
 
     print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = ' + str(task_n+1) + ' по ' + str(task_n*2))
     for i in range(task_n+1, task_n*2):
-        put_task(N_id, i, '', '', False)
-        read_task(N_id, i, '', '', False)
+        put_task(N_id, i, err=False)
+        read_task(N_id, i, err=False)
         del_task(N_id, i, False)
 
     print('Обновление-чтение-удаление не существующих тасок по ' + N_id + ', n = 0 по ' + str(-task_n))
     for i in range(0, -task_n-1, -1):
-        put_task(N_id, i, '', '', False)
-        read_task(N_id, i, '', '', False)
+        put_task(N_id, i, err=False)
+        read_task(N_id, i, err=False)
         del_task(N_id, i, False)
 
     print('Удаление тасок по ' + N_id + ', n = 1 по ' + str(task_n))
     for i in range(task_n, 0, -1):
-        del_task(N_id, i, True)
+        del_task(N_id, i)
 
     print('Проверка БД на очистку')
     read_tasks()
@@ -117,7 +117,7 @@ def create_read_put_del_tasks(task_n: int, N_id: str):
 
 # Тест на запись таски
 # @pytest.fixture(scope="function")
-def create_task(task_id: int, name: str, description: str) -> int:
+def create_task(task_id: int, name='name', description='description') -> int:
     response = client.post(
 #        "/tasks?name=000&description=0000" #,
         "/tasks/json",
@@ -134,7 +134,7 @@ def create_task(task_id: int, name: str, description: str) -> int:
 
 
 # Тест на чтение таски
-def read_task(N_id: str, task_id: int, name: str, description: str, err: bool):
+def read_task(N_id: str, task_id: int, name='name', description='description', err=True):
     response = client.get("/tasks/" + N_id + "/" + str(task_id))
     if err:
         assert response.status_code == 200
@@ -151,7 +151,7 @@ def read_task(N_id: str, task_id: int, name: str, description: str, err: bool):
 
 
 # Тест на замену существующей таску по id
-def put_task(N_id: str, task_id: int, name: str, description: str, err: bool):
+def put_task(N_id: str, task_id: int, name='name', description='description', err=True):
     response = client.put(
         url="/tasks/" + N_id + "/json/" + str(task_id),
         json={
@@ -181,7 +181,7 @@ def put_task(N_id: str, task_id: int, name: str, description: str, err: bool):
 
 
 # Тест на удаление таски
-def del_task(N_id: str, task_id: int, err: bool):
+def del_task(N_id: str, task_id: int, err=True):
     response = client.delete("/tasks/" + N_id + "/" + str(task_id))
     if err:
         assert response.status_code == 200
@@ -198,7 +198,7 @@ def del_task(N_id: str, task_id: int, err: bool):
 
 
 # Тест на чтение всех созданных тасок
-def read_tasks_series(start: int, iteration: int, name: str, description: str):
+def read_tasks_series(start: int, iteration: int, name='name', description='description'):
     response = client.get("/tasks")
     assert response.status_code == 200
     data_jsn = response.json()
