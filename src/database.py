@@ -35,9 +35,13 @@ async def create_tables():    # асинхронная функция для с�
     file_path = './db_papka'
     if not os.path.exists(file_path) and not os.path.isfile(file_path): # существует ли директория and является ли он файлом
         os.mkdir(file_path)
+        print('Папка создана: ' + file_path)
     async with engine.begin() as conn:      # которая обращается к engine, который отправляет запросы
         await conn.run_sync(Model.metadata.create_all)      # и создавать все таблицы
 
 async def delete_tables():    # функция для удаления таблиц (тестовый проект, обычно не используется)
-    async with engine.begin() as conn:
-        await conn.run_sync(Model.metadata.drop_all)
+    file_path = './db_papka/tasks.db'
+    if os.path.exists(file_path) and os.path.isfile(file_path):  # существует ли директория and является ли он файлом
+        async with engine.begin() as conn:
+            await conn.run_sync(Model.metadata.drop_all)
+        print('БД дропнута: ' + file_path)
