@@ -179,6 +179,10 @@ async def index():
 async def index():
     return FileResponse("./index.html")
 
+@router.get('/test.html') # include_in_schema=False - не отображать запрос на /docs
+async def test():
+    return FileResponse("./test.html")
+
 
 @router.get('/favicon.ico') # include_in_schema=False - не отображать запрос на /docs
 async def favicon():
