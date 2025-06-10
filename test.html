@@ -3,9 +3,18 @@
 <body>
 
 <form id="myForm">
-  <input type="text" id="name" name="name" placeholder="Таска">
-  <input type="text" id="description" name="description" placeholder="Дескриптор">
-  <button type="button" id="submitButton">Отправить таску на запись</button>
+<div style="text-align: center;">
+
+	<label for="IP">Выберите IP для отправки:</label>
+	<select id="IP" name="IP" multiple>
+		<option value="http://127.0.0.1:8000/tasks/json">127.0.0.1</option>
+		<option value="http://188.120.249.2:8000/tasks/json">188.120.249.2</option>
+	</select>
+
+	<input type="text" id="name" name="name" placeholder="Таска" value="Таска">
+	<input type="text" id="description" name="description" placeholder="Дескриптор" value="Дескриптор">
+	<button type="button" id="submitButton">Отправить таску на запись</button>
+</div>
 </form>
 
 <script>
@@ -18,7 +27,7 @@ document.getElementById('submitButton').addEventListener('click', function() {
 
     const json = JSON.stringify(Data);
 
-    fetch('http://127.0.0.1:8000/tasks/json', {
+    fetch(document.getElementById('IP').value, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
