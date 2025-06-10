@@ -6,7 +6,7 @@
 
 <div style="text-align: center;">
 	<h2></h2>
-	<label for="IP">Выберите IP для отправки:</label>
+	<label for="IP">IP для запросов:</label>
 	<select id="IP" name="IP" multiple>
 		<option value="127.0.0.1:8000">127.0.0.1</option>
 		<option value="188.120.249.2">188.120.249.2</option>
@@ -20,6 +20,7 @@
 	<h2></h2>
 	<input type="text" style="width: 50px;" id="ID" name="ID" placeholder="ID" value="1">
 	<button type="button" id="json_read">Прочитать таску</button>
+	<h2></h2>
 	<div id="data"></div> <!-- Здесь будет отображаться JSON -->
 </div>
 
@@ -78,7 +79,7 @@ fetch('http://' + document.getElementById('IP').value + '/tasks/id/' + document.
 		console.error('Ошибка:', error);
 		// Отобразить сообщение об ошибке на странице
 		const dataDiv = document.getElementById('data');
-		dataDiv.innerHTML = `<p>Ошибка при загрузке данных: ${error.message}</p>`;
+		dataDiv.innerHTML = `<p>Ошибка. ${error.message}</p>`;
 	});
 });
 </script>
